@@ -1,0 +1,238 @@
+{% extends 'base.html' %}
+{% load mathfilters %}
+
+{% block scripts %}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+	  
+  <script>
+    
+    var barchart = {
+      type: 'horizontalBar',
+          data: {
+            datasets: [{
+        data: {{ co_cities|safe }},
+        backgroundColor: [
+                '#0b903f', '#4ea96b', '#4ea96b', '#badcc4', '#e2f0e6'
+              ],
+              label: 'Cantidad de ciudades'
+            }],
+            labels: {{ lab_cities|safe }}
+          },
+          options: {
+              scales: {
+                xAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            },
+            responsive: true,
+            title: {
+                    display: true,
+                    text: 'Cantidad de ciudades'
+                }            
+          }
+    };
+
+    var timeline = {
+      type: 'line',
+          data: {
+            datasets: [{
+        data: {{ co_date_visit|safe }},
+        backgroundColor: [
+                '#0000ff'
+              ],
+        label: 'Número de visitas por día',
+        lineTension: 0,
+        fill: false,
+        borderColor: '#0000ff',
+        pointBackgroundColor: '#0000ff'
+            }],
+            labels: {{ unique_lab_date_visit|safe }}
+          },
+          options: {
+      responsive: true,
+             title: {
+                    display: true,
+                    text: 'Número de visitas por día'
+                }      
+      }
+    };
+    
+    var myDoughnutChart = {
+        type: 'doughnut',
+            data: {
+            datasets: [{
+        data: {{ co_device1|safe }},
+        backgroundColor: [
+                '#dc1c13', '#f1959b', '#f07470', '#ea4c46', '#f6bdc0'
+              ],
+        label: 'Tipo de dispositivo',
+            }],
+            labels: {{ lab_device|safe }}
+          },
+          options: {
+             responsive: true,
+             title: {
+                    display: true,
+                    text: 'Tipo de dispositivo'
+                }
+      }
+    };
+    
+    var verticalbarchart = {
+      type: 'bar',
+          data: {
+            datasets: [{
+        data: {{ co_ostype|safe }},
+        backgroundColor: [
+                '#deecfb ', '#bedaf7', '#7ab3ef', '#368ce7', '#1666ba'
+              ],
+        label: 'Sistema operativo',     
+            }],
+            labels: {{ lab_ostype|safe }}
+          },
+          options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            },
+            responsive: true,
+            title: {
+                    display: true,
+                    text: 'Sistema operativo'
+                }
+          }
+    };
+
+    window.onload = function() {
+      var ctx = document.getElementById('bar').getContext('2d');
+      window.myPie = new Chart(ctx, barchart);
+
+      var ctx = document.getElementById('time-line').getContext('2d');
+		  window.myPie = new Chart(ctx, timeline);
+		  
+	  var ctx = document.getElementById('doughnut-chart').getContext('2d');
+		  window.myPie = new Chart(ctx, myDoughnutChart);
+		  
+	  var ctx = document.getElementById('verticalbar').getContext('2d');
+      window.myPie = new Chart(ctx, verticalbarchart);
+		  
+    };
+
+  </script>
+  
+
+{% endblock scripts %}
+
+
+{% block content %}
+{% load mathfilters %}
+
+<br>
+
+<div class="row">
+
+	<div class="col">
+		<div class="col-md">
+			<div class="card text-center text-white  mb-3" id="total-orders">
+			  	<div class="card-header">
+			  		<h5 class="card-title" style="color:black;">Número de visitas</h5>
+			  	</div>
+			  	<div class="card-body">
+			    	<h3 class="card-title" style="color:black;">{{ visits.count }}</h3>
+			  	</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="col">
+		<div class="col-md">
+			<div class="card text-center text-white  mb-3" id="orders-delivered">
+			  	<div class="card-header">
+			  		<h5 class="card-title" style="color:black;">Cantidad de visitantes</h5>
+			  	</div>
+			  	<div class="card-body">
+			    	<h3 class="card-title" style="color:black;">{{ visitors_num }}</h3>
+			  	</div>
+			</div>
+		</div>
+	</div>
+
+</div>
+
+<div class="container">
+        <br>
+        <div class="row">
+            
+            <div class='col-xs-6'>
+                <canvas id="doughnut-chart" width="500" height="200"></canvas>
+            </div>
+            <div class='col-xs-6'>
+                <canvas id="verticalbar" width="500" height="200"></canvas>
+            </div> 
+        </div>
+</div>
+
+<div class="container">
+	<br>
+	<div class="row">
+			<canvas id="time-line" width="800" height="200"></canvas>		
+	</div>
+</div>
+
+<div class="row">
+
+	<div class="col">
+		<div class="col-md">
+			<div class="card text-center text-white  mb-3" id="orders-pending">
+			  	<div class="card-header">
+			  		<h5 class="card-title" style="color:black;">Número de países que nos visitan</h5>
+			  	</div>
+			  	<div class="card-body">
+			    	<h3 class="card-title" style="color:black;">{{ countries_num }}</h3>
+			  	</div>
+			</div>
+		</div>
+    </div>
+    
+    <div class="col">
+		<div class="col-md">
+			<div class="card text-center text-white  mb-3" id="orders-pending">
+			  	<div class="card-header">
+			  		<h5 class="card-title" style="color:black;">Número de ciudades que nos visitan</h5>
+			  	</div>
+			  	<div class="card-body">
+			    	<h3 class="card-title" style="color:black;">{{ cities_num }}</h3>
+			  	</div>
+			</div>
+		</div>
+	</div>
+
+</div>
+
+<div id="mapid"></div>
+
+<script>
+	var mymap = L.map('mapid').setView([40, -0.09], 2); L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+    attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+    maxZoom: 18,
+    id: 'mapbox/light-v9',
+    tileSize: 512,
+    zoomOffset: -1,
+    accessToken: 'pk.eyJ1Ijoid2ltYXRldXNhdiIsImEiOiJja2tlZjI0OWkwa2FqMm5xYmFxNmxycTR6In0.1LHszk5K-HfYxn33VoTg-A'
+}).addTo(mymap);	
+</script>
+
+<div class="container">
+	<br>
+	<div class="row">
+			<canvas id="bar" width="800" height="200"></canvas>
+	</div>
+</div>
+
+{% endblock %}
